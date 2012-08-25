@@ -9,13 +9,6 @@ typedef struct
     int second;
 } pairs;
 
-static pairs * make_pair(int first, int second) {
-    pairs * pair = (pairs *)malloc(sizeof(pairs));
-    pair->first = first;
-    pair->second = second;
-    return pair;
-}
-
 static corpus_node * find_node(int amount, corpus_node * chain, int other) {
     int i;
     for(i = 0; i < amount; i++) {
@@ -44,28 +37,31 @@ static corpus_root * make_chain(int count, pairs * both) {
        return NULL;
    }
    corpus_root * root = (corpus_root *)calloc(1, sizeof(corpus_root));
-   for(i = 1; i < count; ++i) {
+   for(i = 0; i < count; i++) {
        pairs * current = both + i;
-       corpus_chain * chain = find_chain(root->amount, root->root, current->first);
+       int key = current->first;
+       int value = current->second;
+       corpus_chain * chain = find_chain(root->amount, root->root, key);
        if(chain == NULL) {
           ++(root->amount);
-          root->root = (corpus_chain *)realloc(root->root, root->amount);
+          root->root = (corpus_chain *)realloc(root->root, root->amount * sizeof(corpus_chain));
           chain = root->root + (root->amount - 1);
-          chain->value = current->first;
+          chain->value = key;
           chain->corpus_amount = 0;
           chain->seen_total = 0;
           chain->corpus = NULL;
        }
-       corpus_node * node = find_node(chain->corpus_amount, chain->corpus, current->second);
+       corpus_node * node = find_node(chain->corpus_amount, chain->corpus, value);
        if(node == NULL) {
           ++(chain->corpus_amount);
-          chain->corpus = (corpus_node *)realloc(chain->corpus, chain->corpus_amount);
+          chain->corpus = (corpus_node *)realloc(chain->corpus, chain->corpus_amount * sizeof(corpus_node));
           node = chain->corpus + (chain->corpus_amount - 1);
-          node->other = current->second;
+          node->other = value;
           node->seen = 0;
+          
        }
-       ++(node->seen);
-       ++(chain->seen_total);
+       chain->seen_total = chain->seen_total + 1;
+       node->seen = node->seen + 1;
    }
    return root;
 }
@@ -81,7 +77,7 @@ corpus_root * generate_chain(FILE * value)
     }
     while((next = getc(value)) != EOF) {
        pair = (pairs *)realloc(pair, ++total);
-       pairs* current = pair + (total - 1);
+       pairs * current = pair + (total - 1);
        current->first = previous;
        current->second = next;
        previous = next;
