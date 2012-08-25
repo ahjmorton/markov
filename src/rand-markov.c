@@ -2,21 +2,22 @@
 #include <stdlib.h>
 #include <time.h>
 
-struct markov_state;
-
-typedef struct
+struct markov_path
 {
     float range;
-    struct markov_state * transition;
+    int transition;
 
-} markov_path; 
+}; 
 
-typedef struct markov_state {
+struct markov_state {
 
-    char value;
+    int value;
     int path_count;
-    markov_path * paths;
-} markov_state;
+    struct markov_path * paths;
+};
+
+typedef struct markov_state markov_state;
+typedef struct markov_path markov_path;
 
 static markov_state * find_state(markov_state * root, int count, int value) {
     int i;
@@ -57,16 +58,20 @@ static markov_path * find_path(markov_path * paths, int count, float range) {
 }
 
 int main(void) {
+    srand(time(NULL));
     int i;
     int total = 0;
-    markov_state * root = NULL;
+    markov_state * root = (markov_state*)calloc(0, sizeof(markov_state));;
     char buffer[1024]; 
-    srand(time(NULL));
     while(fgets(buffer, 1024, stdin) != NULL) {
-        char state;
-        char next;
+        int state;
+        char c_state;
+        int next;
+        char c_next;
         float transition;
-        sscanf(buffer, "%c:%c:%f", &state, &next, &transition);
+        sscanf(buffer, "%c:%c:%f", &c_state, &c_next, &transition);
+        state = (int)c_state;
+        next = (int)c_next;
         markov_state * mstate = find_state(root, total, state);
         if(mstate == NULL) {
            ++total;
@@ -89,10 +94,8 @@ int main(void) {
         mstate->paths = (markov_path *)realloc(mstate->paths, mstate->path_count * sizeof(markov_path));
         markov_path * new_path = mstate->paths + (mstate->path_count - 1);
         new_path->range = transition;
-        new_path->transition = mnext;
-        printf("Set %c to switch to %c at %f\n", mstate->value, mnext->value, transition);
+        new_path->transition = mnext->value;
     }
-    printf("Generated data structure\n");
     for(i = 0; i < total; i++) {
         markov_state * sort_state = root + i;
         qsort(sort_state->paths,
@@ -101,14 +104,13 @@ int main(void) {
               &path_sort);
               
     }
-    printf("Done sorting\n");
     int start = rand() % total;
     markov_state * current = root + start;
     for(i = 0; i < 100; i++) {
         fputc(current->value, stdout);
         float next_range = (float)(rand() % 101) / 100;
         markov_path * path_to_follow = find_path(current->paths, current->path_count, next_range); 
-        current = path_to_follow->transition;
+        current = find_state(root, total, path_to_follow->transition);
             
     }
     return 0;
