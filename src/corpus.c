@@ -3,11 +3,11 @@
 
 #include "corpus.h"
 
-static struct pairs 
+typedef struct 
 {
     int first;
     int second;
-}
+} pairs;
 
 static pairs * make_pair(int first, int second) {
     pairs * pair = (pairs *)malloc(sizeof(pairs));
@@ -16,66 +16,76 @@ static pairs * make_pair(int first, int second) {
     return pair;
 }
 
-static corpus_node * make_node(int other) {
-    corpus_node * node = (corpus_node *)malloc(sizeof(corpus_node));
-    node->other = other;
-    node->seen = 1;
-    return node;
+static corpus_node * find_node(int amount, corpus_node * chain, int other) {
+    int i;
+    for(i = 0; i < amount; i++) {
+        corpus_node * search = chain + i;
+        if(search->other == other) {
+            return search;
+        }
+    }
+    return NULL;
 }
 
-static corpus_chain * make_chain_node(int value) {
-    corpus_chain * chain = (corphus_chain)calloc(1, sizeof(corpus_chain));
-    chain->value = value;
-    chain->seen_total = 1;
-    return chain;
+static corpus_chain * find_chain(int amount, corpus_chain * chain, int value) {
+    int i;
+    for(i = 0; i < amount; i++) {
+       corpus_chain * search = chain + i;
+       if(search->value == value) {
+           return search;
+       }
+    }
+    return NULL;
 }
 
-static corpus_node * find_node(corpus_chain * chain, int other) {
-    corpus_node * search = chain->corpus;
-    int i ;
-    for(i = 0; i < chain->corpus_amount && search->other != other; i++) {
-        ++search;
-    }
-    if(search == NULL) {
-        corpus_node * node = make_node(other);
- 
-    }
-    return search;
-}
-
-static corpus_chain * find_chain(corpus_chain * root, int value) {
-    corpus_chain * search = root;
-    while(search->next != NULL && search->value != value) {
-        search = search->next;
-    }
-    // The next item is null and the value is not the one
-    // we want, so create a new node, append it to the chain
-    // and return it
-    if(search->next == NULL && search->value != value) {
-        corpus_chain * next = make_chain_node(value);
-        search->next = next;
-        search = next;
-    }
-    return search;
-}
-
-static corpus_chain * make_chain(int count, pairs * both) {
+static corpus_root * make_chain(int count, pairs * both) {
    int i;
    if(count == 0) {
        return NULL;
    }
-   corpus_chain * root = make_chain_node(both->first);
-   root->corpus = make_node(both->second);
-   root->amount = 1;
+   corpus_root * root = (corpus_root *)calloc(1, sizeof(corpus_root));
    for(i = 1; i < count; ++i) {
        pairs * current = both + i;
-       corpus_chain * node = find_chain(root, current->first);
+       corpus_chain * chain = find_chain(root->amount, root->root, current->first);
+       if(chain == NULL) {
+          ++(root->amount);
+          root->root = (corpus_chain *)realloc(root->root, root->amount);
+          chain = root->root + (root->amount - 1);
+          chain->value = current->first;
+          chain->corpus_amount = 0;
+          chain->seen_total = 0;
+          chain->corpus = NULL;
+       }
+       corpus_node * node = find_node(chain->corpus_amount, chain->corpus, current->second);
+       if(node == NULL) {
+          ++(chain->corpus_amount);
+          chain->corpus = (corpus_node *)realloc(chain->corpus, chain->corpus_amount);
+          node = chain->corpus + (chain->corpus_amount - 1);
+          node->other = current->second;
+          node->seen = 0;
+       }
+       ++(node->seen);
+       ++(chain->seen_total);
    }
-   return NULL;
+   return root;
 }
 
-corpus_chain * generate_chain(int count, FILE * values)
+corpus_root * generate_chain(FILE * value)
 {
-    return NULL;
+    int previous = getc(value);
+    int next;
+    int total = 0;
+    pairs * pair = NULL;
+    if(previous == EOF) {
+        return NULL;
+    }
+    while((next = getc(value)) != EOF) {
+       pair = (pairs *)realloc(pair, ++total);
+       pairs* current = pair + (total - 1);
+       current->first = previous;
+       current->second = next;
+       previous = next;
+    }
+    return make_chain(total, pair);
 }
 

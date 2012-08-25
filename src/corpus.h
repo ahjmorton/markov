@@ -15,9 +15,14 @@ typedef struct corpus_chain
     int corpus_amount;
     int seen_total;
     corpus_node * corpus;
-    struct corpus_chain * next;
 } corpus_chain;
 
-corpus_chain * generate_chain(int count, FILE * value);
+typedef struct 
+{
+    int amount;
+    corpus_chain * root;
+} corpus_root;
+
+corpus_root * generate_chain(FILE * value);
 
 #endif
