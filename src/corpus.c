@@ -76,7 +76,7 @@ corpus_root * generate_chain(FILE * value)
         return NULL;
     }
     while((next = getc(value)) != EOF) {
-       pair = (pairs *)realloc(pair, ++total);
+       pair = (pairs *)realloc(pair, (++total) * sizeof(pairs));
        pairs * current = pair + (total - 1);
        current->first = previous;
        current->second = next;
