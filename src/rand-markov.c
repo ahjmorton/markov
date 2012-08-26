@@ -107,7 +107,7 @@ int main(void) {
     }
     int start = rand() % total;
     markov_state * current = root + start;
-    for(i = 0; i < 100; i++) {
+    for(i = 0; i < 30; i++) {
         fputc(current->value, stdout);
         float next_range = (float)(rand() % 101) / 100;
         markov_path * path_to_follow = find_path(current->paths, current->path_count, next_range);
