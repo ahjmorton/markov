@@ -15,5 +15,6 @@ int main(void) {
             printf("%c:%c:%f\n",value, node->other, probability);
         }
     }
+    free_chain(root);
     return 0;
 }

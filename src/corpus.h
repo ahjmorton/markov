@@ -6,4 +6,6 @@
 
 corpus_root * generate_chain(FILE * value);
 
+void free_chain(corpus_root *);
+
 #endif

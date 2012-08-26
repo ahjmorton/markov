@@ -82,6 +82,16 @@ corpus_root * generate_chain(FILE * value)
        current->second = next;
        previous = next;
     }
-    return make_chain(total, pair);
+    corpus_root * chain = make_chain(total, pair);
+    free(pair);
+    return chain;
 }
 
+void free_chain(corpus_root * root) {
+    int i;
+    for(i = 0; i < root->amount; i++) {
+       free((root->root + i)->corpus);
+    }
+    free(root->root);
+    free(root);
+}
