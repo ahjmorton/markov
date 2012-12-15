@@ -1,0 +1,11 @@
+C implementation of a Markov Chain corpus generator with example program to generate random output.
+
+Program corpus is used as a command line utility, simply invoke it and pipe the text to do the analyse on.
+
+For each pairs of letters sitting next to one another an output is generated with the probabalitiy that the latter will follow the former.
+
+EXAMPLE
+
+if your input is 'abab' then the following will be output :
+a:b:1.00000
+b:a:1.00000
