@@ -113,6 +113,7 @@ int main(void) {
         new_path->range = transition;
         new_path->transition = mnext->value;
     }
+    
     for(i = 0; i < total; i++) {
         markov_state * sort_state = root + i;
         qsort(sort_state->paths,
