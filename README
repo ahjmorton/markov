@@ -1,11 +1,23 @@
 Requirements :
      Requires CMake version 2.6 or later
+     Requires Python version 2.6 or later for testing
 
 C implementation of a Markov Chain corpus generator with example program to generate random output.
 
 Program corpus is used as a command line utility, simply invoke it and pipe the text to do the analyse on.
 
-For each pairs of letters sitting next to one another an output is generated with the probabalitiy that the latter will follow the former.
+For each pairs of letters sitting next to one another an output is generated with the probability that the latter will follow the former.
+
+BUILDING
+
+mkdir build
+cd build
+cmake ../
+make
+
+If you're feeling truly daring then
+
+make test
 
 EXAMPLE
 
