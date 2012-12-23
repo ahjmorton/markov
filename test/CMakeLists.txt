@@ -21,6 +21,7 @@ if(PYTHONINTERP_FOUND STREQUAL "TRUE")
 
         add_equals_test(SimpleEqualsTest ${TEST_INPUT}/simple ${TEST_CHECK}/simple_check)
         add_correct_test(SimpleCorrectTest ${TEST_INPUT}/simple)
+        add_correct_test(LongInputCorrectTest ${TEST_INPUT}/beowulf)
     endif()
 endif(PYTHONINTERP_FOUND STREQUAL "TRUE") 
 
