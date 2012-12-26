@@ -42,4 +42,4 @@ for first in corpus_result :
         total_prob[first] = total_prob[first] + first_corpus[second]
 
 for character in total_prob :
-    assert total_prob[character] == float(1.0), "Value for {0} should be 1.0 but is {1}".format(character, total_prob[character])
+    assert total_prob[character] == float(1.0), "Value for {0} should be 1.0 but is {1!r}".format(character, total_prob[character])
