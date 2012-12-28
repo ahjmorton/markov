@@ -20,12 +20,15 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 
 int main(void) {
     corpus_root * root = generate_chain(stdin);
+    unsigned long int corpus_length = root->amount;
+    corpus_chain * full_chain = root->root;
     int i, j;
-    for(i = 0; i < root->amount; i++) {
-        corpus_chain * chain = root->root + i;
+    for(i = 0; i < corpus_length; i++) {
+        corpus_chain * chain = full_chain + i;
         unsigned long int total_seen = chain->seen_total;
+        unsigned long int corpus_amount = chain->corpus_amount;
         int value = chain->value;
-        for(j = 0; j < chain->corpus_amount; j++) {
+        for(j = 0; j < corpus_amount; j++) {
             corpus_node * node = chain->corpus + j;
             double probability = (double)node->seen / (double)total_seen;
             printf("%c:%c:%.15f\n",value, node->other, probability);
