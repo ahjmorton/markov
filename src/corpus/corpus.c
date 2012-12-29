@@ -19,38 +19,6 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "corpus.h"
 
-typedef struct corpus_index_value {
-    int value;
-    struct corpus_index_value * next;
-    corpus_node * node;
-} corpus_index_value;
-
-typedef struct corpus_index_key {
-    int key;
-    corpus_chain * chain;
-    struct corpus_index_key * next;
-
-    unsigned int valueCount;
-    unsigned int memSpaces;
-    corpus_index_value * values;
-
-} corpus_index_key;
-
-typedef struct {
-    unsigned int keyCount;
-    unsigned int memSpaces;
-    corpus_index_key * keys;   
-} corpus_index;
-
-#define INITIAL_INDEX_SIZE 64
-
-static corpus_index * createIndex() {
-    return NULL;
-}
-
-static void free_index(corpus_index * index) {
-
-}
 
 static corpus_node * find_node(int amount, corpus_node * chain, int other) {
     int i;

@@ -14,15 +14,31 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stdio.h>
 
-#include "corpus-data.h"
+#include <stdlib.h>
 
-#ifndef HEADER_CORPUS_GENERATOR
-#define HEADER_CORPUS_GENERATOR
+#include "corpus-index.h"
 
-corpus_root * generate_chain(FILE * value);
+corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value){
+    return NULL;
+}
 
-void free_chain(corpus_root *);
+corpus_index_value * find_index_value(corpus_index_key * key, int value){
+    return NULL;
+}
 
-#endif
+corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain){
+    return NULL;
+}
+
+corpus_index_key * find_index_key(corpus_index * index, int key){
+    return NULL;
+}
+
+corpus_index * create_index(void){
+    return NULL;
+}
+
+void free_index(corpus_index * index){
+    
+}

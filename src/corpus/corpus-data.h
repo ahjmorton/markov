@@ -14,15 +14,27 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stdio.h>
+#ifndef CORPUS_DATA_HEADER
+#define CORPUS_DATA_HEADER
 
-#include "corpus-data.h"
+typedef struct
+{
+    int other;
+    unsigned long int seen;
+} corpus_node;
 
-#ifndef HEADER_CORPUS_GENERATOR
-#define HEADER_CORPUS_GENERATOR
+typedef struct 
+{
+    int value;
+    unsigned long int corpus_amount;
+    unsigned long int seen_total;
+    corpus_node * corpus;
+} corpus_chain;
 
-corpus_root * generate_chain(FILE * value);
-
-void free_chain(corpus_root *);
+typedef struct 
+{
+    unsigned long int amount;
+    corpus_chain * root;
+} corpus_root;
 
 #endif
