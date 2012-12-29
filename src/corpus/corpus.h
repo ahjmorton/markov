@@ -25,7 +25,7 @@ typedef struct
     unsigned long int seen;
 } corpus_node;
 
-typedef struct corpus_chain
+typedef struct 
 {
     int value;
     unsigned long int corpus_amount;
