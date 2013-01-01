@@ -3,22 +3,21 @@ enable_testing()
 find_package(Check)
 if(${CHECK_FOUND} STREQUAL "TRUE") 
 
-    GET_DIRECTORY_PROPERTY(CORPUS_SOURCES DIRECTORY "${CMAKE_SOURCE_DIR}/src" DEFINITION CORPUS_SOURCES)
-    GET_DIRECTORY_PROPERTY(CORPUS_INCLUDE DIRECTORY "${CMAKE_SOURCE_DIR}/src" DEFINITION CORPUS_INCLUDE)
+    macro(get_src_property varname propname)
+        GET_DIRECTORY_PROPERTY(${varname} DIRECTORY "${CMAKE_SOURCE_DIR}/src" DEFINITION ${propname}) 
+        IF("${varname}" STREQUAL "") 
+            message(FATAL_ERROR "Cannot find ${varname} variable under src, failing")
+        endif()
+    endmacro(get_src_property)
 
-    IF("${CORPUS_SOURCES}" STREQUAL "") 
-        message(FATAL_ERROR "Cannot find CORPUS_SOURCES variable under src, failing")
-    endif()
-
-    IF("${CORPUS_INCLUDE}" STREQUAL "") 
-        message(FATAL_ERROR "Cannot find CORPUS_INCLUDE variable under src, failing")
-    endif()
+    get_src_property(CORPUS_INCLUDE CORPUS_INCLUDE)
+    get_src_property(CORPUS_LIB CORPUS_LIB)
 
     include_directories(${CHECK_INCLUDE_DIR} ${CORPUS_INCLUDE})
 
     macro(add_test_executable test_name)
-        add_executable(${test_name} "${CMAKE_CURRENT_SOURCE_DIR}/src/${test_name}.c" ${CORPUS_SOURCES} )
-        target_link_libraries(${test_name} ${CHECK_LIBRARIES})
+        add_executable(${test_name} "${CMAKE_CURRENT_SOURCE_DIR}/c/${test_name}.c")
+        target_link_libraries(${test_name} ${CHECK_LIBRARIES} ${CORPUS_LIB})
         add_test(${test_name} ${test_name})
     endmacro(add_test_executable)
 
