@@ -35,5 +35,5 @@ int main(void) {
         }
     }
     free_chain(root);
-    return 0;
+    return EXIT_SUCCESS;
 }
