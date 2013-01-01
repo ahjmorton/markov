@@ -20,8 +20,33 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "corpus-index.h"
 
+static corpus_index * subject;
+
+void setup(void) {
+   subject = create_index();
+}
+
+void teardown(void) {
+   if(subject != NULL) {
+       free_index(subject);
+   } 
+}
+
+START_TEST(test_index_creation_not_null) 
+{
+   fail_unless(subject != NULL);
+}
+END_TEST
+
+
 static Suite * corpus_index_suite(void) {
     Suite * s = suite_create("corpus-index");
+
+    TCase * tc_index = tcase_create("corpus-index-case");
+    tcase_add_checked_fixture(tc_index, setup, teardown);
+    tcase_add_test(tc_index, test_index_creation_not_null);
+    suite_add_tcase(s, tc_index);
+
     return s;
 }
 
