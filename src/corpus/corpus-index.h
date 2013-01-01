@@ -31,16 +31,16 @@ typedef struct corpus_index_key {
     corpus_chain * chain;
     struct corpus_index_key * next;
 
-    unsigned int valueCount;
-    unsigned int memSpaces;
-    corpus_index_value * values;
+    unsigned int value_count;
+    unsigned int mem_spaces;
+    corpus_index_value ** values;
 
 } corpus_index_key;
 
 typedef struct {
-    unsigned int keyCount;
-    unsigned int memSpaces;
-    corpus_index_key * keys;   
+    unsigned int key_count;
+    unsigned int mem_spaces;
+    corpus_index_key ** keys;   
 } corpus_index;
 
 corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value);

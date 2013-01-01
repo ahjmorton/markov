@@ -16,8 +16,11 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "corpus-index.h"
+
+#define INITIAL_MEM_SPACES 32
 
 corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value){
     return NULL;
@@ -36,9 +39,44 @@ corpus_index_key * find_index_key(corpus_index * index, int key){
 }
 
 corpus_index * create_index(void){
-    return NULL;
+    int i;
+    size_t bucket_size = INITIAL_MEM_SPACES * sizeof(corpus_index_key *);
+
+    corpus_index * index = (corpus_index *)malloc(sizeof(corpus_index));
+    index->keys = (corpus_index_key **)malloc(bucket_size);
+    for(i = 0; i < INITIAL_MEM_SPACES; i++) {
+        *(index->keys + i) = NULL;
+    }
+    index->mem_spaces = INITIAL_MEM_SPACES;
+    index->key_count = 0;
+
+    return index;
+}
+
+static void free_index_value(corpus_index_value * value) {
+    if(value != NULL) {
+        free_index_value(value->next);
+        free(value);
+    }
+}
+
+static void free_index_key(corpus_index_key * key) {
+    int i;
+    if(key != NULL) {
+        free_index_key(key->next);
+        for(i = 0; i < key->mem_spaces; i++) {
+            free_index_value(*(key->values + i));
+        }
+        free(key->values);
+        free(key);
+    }
 }
 
 void free_index(corpus_index * index){
-    
+    int i;
+    for(i = 0; i < index->mem_spaces; i++) {
+        free_index_key(*(index->keys + i));
+    }
+    free(index->keys);
+    free(index);
 }
