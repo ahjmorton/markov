@@ -20,7 +20,8 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "corpus-index.h"
 
-#define INITIAL_MEM_SPACES 32
+#define INITIAL_INDEX_BUCKETS 32
+#define INITIAL_KEY_BUCKETS 32
 
 corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value){
     return NULL;
@@ -31,7 +32,25 @@ corpus_index_value * find_index_value(corpus_index_key * key, int value){
 }
 
 corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain){
-    return NULL;
+    int i;
+    int hash = chain->value % index->mem_spaces;
+    corpus_index_key * bucket;
+    corpus_index_key ** bucket_cell = (index->keys + hash);
+    while(*bucket_cell != NULL) {
+        bucket_cell = &((*bucket_cell)->next);
+    }
+    (*bucket_cell) = (corpus_index_key *)calloc(1, sizeof(corpus_index_key));
+    bucket = (*bucket_cell);
+    bucket->next = NULL;
+    bucket->chain = chain;
+    bucket->key = chain->value;
+    bucket->value_count = 0;
+    bucket->values = (corpus_index_value **)malloc(INITIAL_KEY_BUCKETS * sizeof(corpus_index_value *));
+    for(i = 0; i < INITIAL_KEY_BUCKETS; i++) {
+        *(bucket->values + i) = NULL;
+    }
+    bucket->mem_spaces = INITIAL_KEY_BUCKETS;
+    return bucket;
 }
 
 corpus_index_key * find_index_key(corpus_index * index, int key){
@@ -40,14 +59,14 @@ corpus_index_key * find_index_key(corpus_index * index, int key){
 
 corpus_index * create_index(void){
     int i;
-    size_t bucket_size = INITIAL_MEM_SPACES * sizeof(corpus_index_key *);
+    size_t bucket_size = INITIAL_INDEX_BUCKETS * sizeof(corpus_index_key *);
 
     corpus_index * index = (corpus_index *)malloc(sizeof(corpus_index));
     index->keys = (corpus_index_key **)malloc(bucket_size);
-    for(i = 0; i < INITIAL_MEM_SPACES; i++) {
+    for(i = 0; i < INITIAL_INDEX_BUCKETS; i++) {
         *(index->keys + i) = NULL;
     }
-    index->mem_spaces = INITIAL_MEM_SPACES;
+    index->mem_spaces = INITIAL_INDEX_BUCKETS;
     index->key_count = 0;
 
     return index;

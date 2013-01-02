@@ -52,10 +52,33 @@ START_TEST(test_index_add_key)
     corpus_index_key * key = add_index_key(subject, to_add);   
 
     fail_unless(key != NULL, "Returned key is null");
-    fail_unless(key->key != value, "Value of index is not the same");
-    fail_unless(key->chain != to_add, "Chain link is not the same as the one added");
+    fail_unless(key->key == value, "Value of index is not the same");
+    fail_unless(key->chain == to_add, "Chain link is not the same as the one added");
 
     free(to_add);
+}
+END_TEST
+
+START_TEST(test_index_find_key_present) 
+{
+    int value = (int)'a';
+    corpus_chain * to_add = create_chain(value);
+    add_index_key(subject, to_add);   
+
+    corpus_index_key * key = find_index_key(subject, value);
+    fail_unless(key != NULL, "Found key was null");
+    fail_unless(key->key == value, "Value of index is not the same");
+    fail_unless(key->chain == to_add, "Chain link is not the same as the one added");
+
+    free(to_add);
+}
+END_TEST
+
+START_TEST(test_index_find_key_missing) 
+{
+    int value = (int)'a';
+    corpus_index_key * key = find_index_key(subject, value);
+    fail_unless(key == NULL, "Found a key in an empty index");
 }
 END_TEST
 
@@ -66,6 +89,8 @@ static Suite * corpus_index_suite(void) {
     tcase_add_checked_fixture(tc_index, setup, teardown);
     tcase_add_test(tc_index, test_index_creation_not_null);
     tcase_add_test(tc_index, test_index_add_key);
+    tcase_add_test(tc_index, test_index_find_key_present);
+    tcase_add_test(tc_index, test_index_find_key_missing);
     suite_add_tcase(s, tc_index);
 
     return s;
