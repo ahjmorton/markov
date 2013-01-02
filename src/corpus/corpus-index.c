@@ -28,8 +28,7 @@ corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value
 }
 
 corpus_index_value * find_index_value(corpus_index_key * key, int value){
-    return NULL;
-}
+    }
 
 corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain){
     int i;
@@ -54,7 +53,12 @@ corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain){
 }
 
 corpus_index_key * find_index_key(corpus_index * index, int key){
-    return NULL;
+    int hash = key % index->mem_spaces;
+    corpus_index_key * bucket = *(index->keys + hash);
+    while(bucket != NULL && bucket->key != key) {
+        bucket = bucket->next;
+    }
+    return bucket;
 }
 
 corpus_index * create_index(void){
