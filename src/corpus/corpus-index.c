@@ -24,11 +24,29 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 #define INITIAL_KEY_BUCKETS 32
 
 corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value){
-    return NULL;
+    int hash = value->other % key->mem_spaces;
+    corpus_index_value * bucket;
+    corpus_index_value ** bucket_cell = (key->values + hash);
+    while(*bucket_cell != NULL) {
+        bucket_cell = &((*bucket_cell)->next);
+    }
+    (*bucket_cell) = (corpus_index_value *)calloc(1, sizeof(corpus_index_value));
+    bucket = (*bucket_cell);
+    bucket->next = NULL;
+    bucket->node = value;
+    bucket->value = value->other;
+    return bucket;
 }
 
 corpus_index_value * find_index_value(corpus_index_key * key, int value){
+    int hash = value % key->mem_spaces;
+    corpus_index_value * bucket = *(key->values + hash);
+    while(bucket != NULL && bucket->value != value) {
+        bucket = bucket->next;
     }
+    return bucket;
+
+}
 
 corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain){
     int i;
