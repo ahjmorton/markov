@@ -14,23 +14,27 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stdio.h>
+#ifndef CORPUS_DATA_HEADER
+#define CORPUS_DATA_HEADER
 
-#include "corpus.h"
+typedef struct
+{
+    int other;
+    unsigned long int seen;
+} corpus_node;
 
-int main(void) {
-    corpus_root * root = generate_chain(stdin);
-    int i, j;
-    for(i = 0; i < root->amount; i++) {
-        corpus_chain * chain = root->root + i;
-        unsigned long int total_seen = chain->seen_total;
-        int value = chain->value;
-        for(j = 0; j < chain->corpus_amount; j++) {
-            corpus_node * node = chain->corpus + j;
-            double probability = (double)node->seen / (double)total_seen;
-            printf("%c:%c:%.15f\n",value, node->other, probability);
-        }
-    }
-    free_chain(root);
-    return 0;
-}
+typedef struct 
+{
+    int value;
+    unsigned long int corpus_amount;
+    unsigned long int seen_total;
+    corpus_node * corpus;
+} corpus_chain;
+
+typedef struct 
+{
+    unsigned long int amount;
+    corpus_chain * root;
+} corpus_root;
+
+#endif
