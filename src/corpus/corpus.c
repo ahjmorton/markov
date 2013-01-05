@@ -18,52 +18,43 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 
 #include "corpus.h"
+#include "corpus-data.h"
+#include "corpus-index.h"
 
-
-static corpus_node * find_node(int amount, corpus_node * chain, int other) {
-    int i;
-    for(i = 0; i < amount; i++) {
-        corpus_node * search = chain + i;
-        if(search->other == other) {
-            return search;
-        }
-    }
-    return NULL;
-}
-
-static corpus_chain * find_chain(int amount, corpus_chain * chain, int value) {
-    int i;
-    for(i = 0; i < amount; i++) {
-       corpus_chain * search = chain + i;
-       if(search->value == value) {
-           return search;
-       }
-    }
-    return NULL;
-}
-
-static void add_pair(corpus_root * root, int key, int value) {
-    corpus_chain * chain = find_chain(root->amount, root->root, key);
-    if(chain == NULL) {
+static void add_pair(corpus_root * root, corpus_index * index, int key, int value) {
+    corpus_index_key * index_key = find_index_key(index, key);
+    if(index_key == NULL) {
         ++(root->amount);
         root->root = (corpus_chain *)realloc(root->root, root->amount * sizeof(corpus_chain));
-        chain = root->root + (root->amount - 1);
-        chain->value = key;
-        chain->corpus_amount = 0;
-        chain->seen_total = 0;
-        chain->corpus = NULL;
+        unsigned long int new_chain_index = root->amount - 1;
+        corpus_chain * new_chain = root->root + new_chain_index ;
+        new_chain->value = key;
+        new_chain->corpus_amount = 0;
+        new_chain->seen_total = 0;
+        new_chain->corpus = NULL;
+        index_key = add_index_key(index, new_chain_index, key);
     }
-    corpus_node * node = find_node(chain->corpus_amount, chain->corpus, value);
-    if(node == NULL) {
+    corpus_chain * chain = root->root + index_key->chain_index;
+    corpus_index_value * index_value = find_index_value(index_key, value);
+    if(index_value == NULL) {
         ++(chain->corpus_amount);
         chain->corpus = (corpus_node *)realloc(chain->corpus, chain->corpus_amount * sizeof(corpus_node));
-        node = chain->corpus + (chain->corpus_amount - 1);
-        node->other = value;
-        node->seen = 0;
-          
+        unsigned long int new_node_index = chain->corpus_amount - 1;
+        corpus_node * new_node = chain->corpus + new_node_index;
+        new_node->other = value;
+        new_node->seen = 0;
+        index_value = add_index_value(index_key, new_node_index, value);
     }
+    corpus_node * node = chain->corpus + index_value->node_index;
     chain->seen_total = chain->seen_total + 1;
     node->seen = node->seen + 1;
+}
+
+static corpus_root * create_root() {
+    corpus_root * root = (corpus_root *)malloc(sizeof(corpus_root));
+    root->amount = 0;
+    root->root = NULL; 
+    return root;
 }
 
 corpus_root * generate_chain(FILE * value)
@@ -74,11 +65,13 @@ corpus_root * generate_chain(FILE * value)
     if(previous == EOF) {
         return NULL;
     }
-    corpus_root * chain = (corpus_root *)calloc(1, sizeof(corpus_root));
+    corpus_root * chain = create_root();
+    corpus_index * index = create_index();
     while((next = getc(value)) != EOF) {
-       add_pair(chain, previous, next);
+       add_pair(chain, index, previous, next);
        previous = next;
     }
+    free_index(index);
     return chain;
 }
 
