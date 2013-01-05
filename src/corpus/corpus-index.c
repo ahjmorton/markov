@@ -23,18 +23,18 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 #define INITIAL_INDEX_BUCKETS 32
 #define INITIAL_KEY_BUCKETS 32
 
-corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value){
-    int hash = value->other % key->mem_spaces;
+corpus_index_value * add_index_value(corpus_index_key * key, unsigned long int node_index, int value){
+    int hash = value % key->mem_spaces;
     corpus_index_value * bucket;
     corpus_index_value ** bucket_cell = (key->values + hash);
     while(*bucket_cell != NULL) {
         bucket_cell = &((*bucket_cell)->next);
     }
-    (*bucket_cell) = (corpus_index_value *)calloc(1, sizeof(corpus_index_value));
+    (*bucket_cell) = (corpus_index_value *)malloc(sizeof(corpus_index_value));
     bucket = (*bucket_cell);
     bucket->next = NULL;
-    bucket->node = value;
-    bucket->value = value->other;
+    bucket->node_index = node_index;
+    bucket->value = value;
     return bucket;
 }
 
@@ -48,19 +48,19 @@ corpus_index_value * find_index_value(corpus_index_key * key, int value){
 
 }
 
-corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain){
+corpus_index_key * add_index_key(corpus_index * index, unsigned long int chain_index, int key){
     int i;
-    int hash = chain->value % index->mem_spaces;
+    int hash = key % index->mem_spaces;
     corpus_index_key * bucket;
     corpus_index_key ** bucket_cell = (index->keys + hash);
     while(*bucket_cell != NULL) {
         bucket_cell = &((*bucket_cell)->next);
     }
-    (*bucket_cell) = (corpus_index_key *)calloc(1, sizeof(corpus_index_key));
+    (*bucket_cell) = (corpus_index_key *)malloc(sizeof(corpus_index_key));
     bucket = (*bucket_cell);
     bucket->next = NULL;
-    bucket->chain = chain;
-    bucket->key = chain->value;
+    bucket->chain_index = chain_index;
+    bucket->key = key;
     bucket->value_count = 0;
     bucket->values = (corpus_index_value **)malloc(INITIAL_KEY_BUCKETS * sizeof(corpus_index_value *));
     for(i = 0; i < INITIAL_KEY_BUCKETS; i++) {

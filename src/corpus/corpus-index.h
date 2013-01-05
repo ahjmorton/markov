@@ -15,20 +15,18 @@ You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "corpus-data.h"
-
 #ifndef CORPUS_INDEX_HEADER
 #define CORPUS_INDEX_HEADER
 
 typedef struct corpus_index_value {
     int value;
+    unsigned long int node_index;
     struct corpus_index_value * next;
-    corpus_node * node;
 } corpus_index_value;
 
 typedef struct corpus_index_key {
     int key;
-    corpus_chain * chain;
+    unsigned long int chain_index;
     struct corpus_index_key * next;
 
     unsigned int value_count;
@@ -43,11 +41,11 @@ typedef struct {
     corpus_index_key ** keys;   
 } corpus_index;
 
-corpus_index_value * add_index_value(corpus_index_key * key, corpus_node * value);
+corpus_index_value * add_index_value(corpus_index_key * key, unsigned long int node_index, int value);
 
 corpus_index_value * find_index_value(corpus_index_key * key, int value);
 
-corpus_index_key * add_index_key(corpus_index * index, corpus_chain * chain);
+corpus_index_key * add_index_key(corpus_index * index, unsigned long int chain_index, int key);
 
 corpus_index_key * find_index_key(corpus_index * index, int key);
 
