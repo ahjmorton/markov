@@ -18,28 +18,40 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CORPUS_INDEX_HEADER
 #define CORPUS_INDEX_HEADER
 
-typedef struct corpus_index_value {
+
+/**
+ * These structures are not designed to be read 
+ * directly so don't refer to any of their elements.
+ * Use the methods provided!
+ */
+struct __corpus_index_value {
     int value;
     unsigned long int node_index;
-    struct corpus_index_value * next;
-} corpus_index_value;
+    struct __corpus_index_value * next;
+};
 
-typedef struct corpus_index_key {
+#define corpus_index_value struct __corpus_index_value
+
+struct __corpus_index_key {
     int key;
     unsigned long int chain_index;
-    struct corpus_index_key * next;
+    struct __corpus_index_key * next;
 
     unsigned int value_count;
     unsigned int mem_spaces;
     corpus_index_value ** values;
 
-} corpus_index_key;
+};
 
-typedef struct {
+#define corpus_index_key struct __corpus_index_key
+
+struct __corpus_index{
     unsigned int key_count;
     unsigned int mem_spaces;
     corpus_index_key ** keys;   
-} corpus_index;
+};
+
+#define corpus_index struct __corpus_index
 
 corpus_index_value * add_index_value(corpus_index_key * key, unsigned long int node_index, int value);
 
