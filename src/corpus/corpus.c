@@ -72,19 +72,34 @@ void free_options(chain_options * ops) {
     free(ops);
 }
 
+static int is_ignored(int value, int * ignored, int ignoreAmount) {
+    int i;
+    if(ignoreAmount == 0 || ignored == NULL) {
+        return 0;
+    }
+    for(i = 0; i < ignoreAmount; i++) {
+        if(value == ignored[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 corpus_root * generate_chain(chain_options * opts) {
     FILE * value = opts->input;
     int previous = getc(value);
     int next;
     int total = 0;
+    corpus_root * chain = create_root();
+    corpus_index * index = create_index();
     if(previous == EOF) {
         return NULL;
     }
-    corpus_root * chain = create_root();
-    corpus_index * index = create_index();
     while((next = getc(value)) != EOF) {
-       add_pair(chain, index, previous, next);
+       if(!is_ignored(next, opts->ignore, opts->ignoreCount) &&
+          !is_ignored(previous, opts->ignore, opts->ignoreCount)) {
+           add_pair(chain, index, previous, next);
+       }
        previous = next;
     }
     free_index(index);
