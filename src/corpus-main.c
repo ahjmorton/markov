@@ -24,6 +24,8 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 static chain_options * parse_ops(int argc, char ** argv) {
     int c;
     int i;
+    int ic;
+    int next;
     unsigned int ignoreCount = 0;
     int * ignore = NULL;
     char * ignoreStr = NULL;
@@ -35,7 +37,18 @@ static chain_options * parse_ops(int argc, char ** argv) {
                 ignoreCount = strlen(ignoreStr);
                 ignore = (int *)malloc(ignoreCount * sizeof(int));
                 for(i = 0; i < ignoreCount; i++) {
-                     ignore[i] = (int)ignoreStr[i];
+                     ic = (int)ignoreStr[i];
+                     if(ic == '\\') {
+                         next = (int)ignoreStr[++i];
+                         switch(next) {
+                             case 'n' :
+                                 ignore[i - 1] = '\n';
+                                 break;
+                         }
+                     }
+                     else {
+                         ignore[i] = ic;
+                     }
                 }
                 break;
         }
