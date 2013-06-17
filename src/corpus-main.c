@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -22,13 +23,25 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 
 static chain_options * parse_ops(int argc, char ** argv) {
     int c;
+    int i;
+    unsigned int ignoreCount = 0;
+    int * ignore = NULL;
+    char * ignoreStr = NULL;
     chain_options * options = create_default_ops();
     while((c = getopt(argc, argv, "d:")) != -1) {
         switch(c) {
             case 'd' :
+                ignoreStr = optarg;
+                ignoreCount = strlen(ignoreStr);
+                ignore = (int *)malloc(ignoreCount * sizeof(int));
+                for(i = 0; i < ignoreCount; i++) {
+                     ignore[i] = (int)ignoreStr[i];
+                }
                 break;
         }
     }
+    options->ignore = ignore;
+    options->ignoreCount = ignoreCount;
     return options;
 }
 
