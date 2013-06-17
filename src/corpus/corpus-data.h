@@ -14,6 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stdio.h>
+
 #ifndef CORPUS_DATA_HEADER
 #define CORPUS_DATA_HEADER
 
@@ -37,4 +39,10 @@ typedef struct
     corpus_chain * root;
 } corpus_root;
 
+typedef struct 
+{
+    FILE * input;
+    int * ignore;
+    unsigned int ignoreCount;
+} chain_options;
 #endif

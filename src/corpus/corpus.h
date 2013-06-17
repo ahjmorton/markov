@@ -14,15 +14,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stdio.h>
-
 #include "corpus-data.h"
 
 #ifndef HEADER_CORPUS_GENERATOR
 #define HEADER_CORPUS_GENERATOR
 
-corpus_root * generate_chain(FILE * value);
+corpus_root * generate_chain(chain_options * options);
 
 void free_chain(corpus_root *);
+
+chain_options * create_default_ops(void);
+
+void free_options(chain_options *);
 
 #endif

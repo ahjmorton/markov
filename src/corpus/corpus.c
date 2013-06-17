@@ -57,8 +57,24 @@ static corpus_root * create_root() {
     return root;
 }
 
-corpus_root * generate_chain(FILE * value)
-{
+chain_options * create_default_ops(void) {
+    chain_options * options = (chain_options *)malloc(sizeof(chain_options));
+    options->input = stdin;
+    options->ignore = NULL;
+    options->ignoreCount = 0;
+    return options;
+}
+
+void free_options(chain_options * ops) {
+    if(ops->ignore != NULL) {
+        free(ops->ignore);
+    }
+    free(ops);
+}
+
+
+corpus_root * generate_chain(chain_options * opts) {
+    FILE * value = opts->input;
     int previous = getc(value);
     int next;
     int total = 0;

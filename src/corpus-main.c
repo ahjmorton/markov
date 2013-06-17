@@ -16,11 +16,23 @@ along with markov.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "corpus.h"
 
-int main(void) {
-    corpus_root * root = generate_chain(stdin);
+static chain_options * parse_ops(int argc, char ** argv) {
+    int c;
+    chain_options * options = create_default_ops();
+    while((c = getopt(argc, argv, "d:")) != -1) {
+        switch(c) {
+            case 'd' :
+                break;
+        }
+    }
+    return options;
+}
+
+static void output_chain(corpus_root * root) {
     unsigned long int corpus_length = root->amount;
     corpus_chain * full_chain = root->root;
     int i, j;
@@ -35,6 +47,13 @@ int main(void) {
             printf("%c:%c:%.15f\n",value, node->other, probability);
         }
     }
+}
+
+int main(int argc, char ** argv) {
+    chain_options * ops = parse_ops(argc, argv);
+    corpus_root * root = generate_chain(ops);
+    output_chain(root);
+    free_options(ops);
     free_chain(root);
     return EXIT_SUCCESS;
 }
